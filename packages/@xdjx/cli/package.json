@@ -1,0 +1,35 @@
+{
+  "name": "@xdjx/cli",
+  "version": "0.0.1",
+  "description": "cli",
+  "keywords": [
+    "cli"
+  ],
+  "author": "EditYJ <158392613@qq.com>",
+  "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/packages/@xdjx/cli#readme",
+  "license": "MIT",
+  "main": "lib/cli.js",
+  "bin": {
+    "xdjx": "bin/index.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdjx/xdjx-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/xdjx/xdjx-cli/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
