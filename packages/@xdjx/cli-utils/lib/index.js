@@ -3,5 +3,5 @@
 module.exports = cliUtils;
 
 function cliUtils() {
-    // TODO
+    console.log("我是工具包");
 }

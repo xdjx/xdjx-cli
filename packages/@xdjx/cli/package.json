@@ -19,6 +19,9 @@
   "files": [
     "lib"
   ],
+  "dependencies": {
+    "@xdjx/cli-utils": "file:../cli-utils"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xdjx/xdjx-cli.git"
