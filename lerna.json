@@ -2,5 +2,11 @@
   "packages": [
     "packages/@xdjx/cli*"
   ],
+  "publish": {
+    "ignoreChanges": [
+      "package-lock.json"
+    ],
+    "message": "chore(release): publish"
+  },
   "version": "0.0.3"
 }
