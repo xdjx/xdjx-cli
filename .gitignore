@@ -2,8 +2,5 @@ node_modules
 .vscode
 .idea
 
-packages/**/node_modules
-packages/**/package-lock.json
-
 package-lock.json
 lerna-debug.log
