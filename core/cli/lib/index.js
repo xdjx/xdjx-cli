@@ -1,7 +1,9 @@
 "use strict";
 
+const log = require("@xdjx/cli-log");
+
 module.exports = cli;
 
 function cli(argv) {
-  console.log("传入的参数是", argv);
+  log.danger('cli', '你好 执行完成了');
 }

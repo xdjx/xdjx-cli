@@ -8,7 +8,7 @@
   "author": "EditYJ <158392613@qq.com>",
   "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/packages/@xdjx/cli#readme",
   "license": "MIT",
-  "main": "lib/cli.js",
+  "main": "lib/index.js",
   "bin": {
     "xdjx": "bin/index.js"
   },
@@ -20,9 +20,8 @@
     "lib"
   ],
   "dependencies": {
-    "@xdjx/cli-utils": "file:../../utils/cli-utils",
-    "import-local": "^3.0.2",
-    "npmlog": "^4.1.2"
+    "@xdjx/cli-log": "file:../../utils/cli-log",
+    "import-local": "^3.0.2"
   },
   "repository": {
     "type": "git",
