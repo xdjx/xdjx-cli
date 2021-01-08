@@ -1,6 +1,9 @@
 {
   "packages": [
-    "packages/@xdjx/cli*"
+    "commands/cli*",
+    "core/cli*",
+    "models/cli*",
+    "utils/cli*"
   ],
   "version": "0.0.4"
 }

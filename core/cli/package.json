@@ -20,7 +20,9 @@
     "lib"
   ],
   "dependencies": {
-    "@xdjx/cli-utils": "file:../cli-utils"
+    "@xdjx/cli-utils": "file:../../utils/cli-utils",
+    "import-local": "^3.0.2",
+    "npmlog": "^4.1.2"
   },
   "repository": {
     "type": "git",
