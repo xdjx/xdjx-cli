@@ -20,8 +20,16 @@
     "lib"
   ],
   "dependencies": {
+    "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
     "@xdjx/cli-log": "file:../../utils/cli-log",
-    "import-local": "^3.0.2"
+    "colors": "^1.4.0",
+    "dotenv": "^8.2.0",
+    "import-local": "^3.0.2",
+    "minimist": "^1.2.5",
+    "path-exists": "^4.0.0",
+    "root-check": "^1.0.0",
+    "semver": "^7.3.4",
+    "user-home": "^2.0.0"
   },
   "repository": {
     "type": "git",
