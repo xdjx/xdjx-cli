@@ -8,16 +8,17 @@ const userHome = require("user-home");
 const rootCheck = require("root-check");
 const pathExists = require("path-exists").sync;
 const dotenv = require("dotenv");
+const dedent = require("dedent");
 
 const log = require("@xdjx/cli-log");
-const { getNpmInfo } = require("@xdjx/cli-get-npm-info");
+const { getLastestVersion } = require("@xdjx/cli-get-npm-info");
 const pkg = require("../package.json");
 const constant = require("../lib/const");
 const minimist = require("minimist");
 
 module.exports = cli;
 
-function cli(argv) {
+async function cli(argv) {
   try {
     checkPkgVersion();
     checkNodeVersion();
@@ -27,7 +28,7 @@ function cli(argv) {
     checkRoot();
     checkUserHome();
     checkEnv();
-    checkGolbalUpdate();
+    await checkGolbalUpdate();
   } catch (e) {
     log.error(e.message);
   }
@@ -60,7 +61,7 @@ function checkNodeVersion() {
  */
 function checkRoot() {
   rootCheck();
-  log.verbose("系统权限", process.geteuid && process.geteuid());
+  log.verbose("当前系统权限\t", process.geteuid && process.geteuid());
 }
 
 /**
@@ -99,10 +100,10 @@ function checkEnv() {
   const envPath = path.resolve(userHome, ".xdjxenv");
   if (pathExists(envPath)) {
     const config = dotenv.config({ path: envPath });
-    log.verbose("读取到本地自定义环境变量", config.parsed);
+    log.verbose("本地自定环境变量\t", config.parsed);
   }
   createDefaultConfig();
-  log.verbose("读取到cliHome", process.env.CLI_HOME_PATH);
+  log.verbose("读取到cliHome\t", process.env.CLI_HOME_PATH);
 }
 function createDefaultConfig() {
   let cliHome = "";
@@ -115,12 +116,20 @@ function createDefaultConfig() {
   process.env.CLI_HOME_PATH = cliHome;
 }
 
-function checkGolbalUpdate() {
+async function checkGolbalUpdate() {
   // 1. 获取当前版本号和模块名
   const currentVersion = pkg.version;
   const pkgName = pkg.name;
   // 2. 调用 npm api 获取所有版本号
-  getNpmInfo(pkgName);
   // 3. 提取所有版本号，比对那些版本号是大于当前版本号的
+  const newVersion = await getLastestVersion(pkgName, currentVersion);
+  log.verbose("最新版本号\t", newVersion);
   // 4. 给出最新的版本号，提示用户更新到最新版本
+  if (semver.gt(newVersion, currentVersion)) {
+    log.warn(
+      "需要更新😘\t",
+      dedent`当前版本 ${currentVersion} 已过时, 请更新到最新版本 ${newVersion}
+      更新命令：npm install ${pkgName} -G`
+    );
+  }
 }
