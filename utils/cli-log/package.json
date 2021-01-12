@@ -28,5 +28,9 @@
   },
   "dependencies": {
     "npmlog": "^4.1.2"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4a7af027767c42f84ae6d34c65201b222899a1ff"
 }
