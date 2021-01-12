@@ -33,11 +33,12 @@ function getRegistry(native) {
  */
 async function getPkgVersions(pkgName, native) {
   const data = await getNpmInfo(pkgName, native);
+  let versions = [];
   if (data) {
-    return Object.keys(data.versions);
-  } else {
-    return [];
+    versions = Object.keys(data.versions);
   }
+  versions.sort((a, b) => (semver.gt(b, a) ? 1 : -1));
+  return versions;
 }
 
 /**
@@ -59,7 +60,6 @@ async function getGTVersions(pkgName, baseVersion, native) {
  */
 async function getLastestVersion(pkgName, baseVersion, native) {
   const versions = await getGTVersions(pkgName, baseVersion, native);
-  versions.sort((a, b) => (semver.gt(b, a) ? 1 : -1));
   return versions[0];
 }
 

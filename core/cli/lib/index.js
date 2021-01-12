@@ -11,7 +11,7 @@ const dotenv = require("dotenv");
 const dedent = require("dedent");
 
 const log = require("@xdjx/cli-log");
-const { getLastestVersion } = require("@xdjx/cli-get-npm-info");
+const { getLastestVersion, getPkgVersions } = require("@xdjx/cli-get-npm-info");
 const pkg = require("../package.json");
 const constant = require("../lib/const");
 const minimist = require("minimist");
@@ -125,11 +125,22 @@ async function checkGolbalUpdate() {
   const newVersion = await getLastestVersion(pkgName, currentVersion);
   log.verbose("最新版本号\t", newVersion);
   // 4. 给出最新的版本号，提示用户更新到最新版本
-  if (semver.gt(newVersion, currentVersion)) {
+  if (newVersion) {
+    if (semver.gt(newVersion, currentVersion)) {
+      log.warn(
+        "需要更新😘\t",
+        dedent`当前版本 ${currentVersion} 已过时, 请更新到最新版本 ${newVersion}
+        更新命令：npm install ${pkgName} -G`
+      );
+    }
+  } else {
+    const versions = await getPkgVersions(pkgName);
     log.warn(
-      "需要更新😘\t",
-      dedent`当前版本 ${currentVersion} 已过时, 请更新到最新版本 ${newVersion}
-      更新命令：npm install ${pkgName} -G`
+      "版本号错误😘\t",
+      dedent`当前版本 ${currentVersion} 有问题, 请重新安装本脚手架
+      当前镜像源最新版本${versions[0]}, 原因可能是镜像源更新不及时
+      请稍后重新安装更新最新脚手架版本
+      安装命令：npm install ${pkgName} -G`
     );
   }
 }
