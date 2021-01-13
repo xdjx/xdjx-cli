@@ -9,6 +9,8 @@ const rootCheck = require("root-check");
 const pathExists = require("path-exists").sync;
 const dotenv = require("dotenv");
 const dedent = require("dedent");
+const commander = require("commander");
+const init = require("@xdjx/cli-init");
 
 const log = require("@xdjx/cli-log");
 const { getLastestVersion, getPkgVersions } = require("@xdjx/cli-get-npm-info");
@@ -18,19 +20,54 @@ const minimist = require("minimist");
 
 module.exports = cli;
 
+const program = new commander.Command();
+
 async function cli(argv) {
   try {
     checkPkgVersion();
     checkNodeVersion();
-
-    checkInputArgs();
-
     checkRoot();
     checkUserHome();
     checkEnv();
     await checkGolbalUpdate();
+
+    registerCommands();
   } catch (e) {
     log.error(e.message);
+  }
+}
+
+function registerCommands() {
+  program
+    .name(Object.keys(pkg.bin)[0])
+    .usage("<command> [options]")
+    .version(pkg.version)
+    .option("-d --debug", "是否开启debug模式", false);
+
+  program
+    .description("初始化项目")
+    .command("init [projectName]")
+    .option("-f --force", "是否覆盖原有目录文件，强制初始化项目")
+    .action(init);
+
+  program.on("option:debug", () => {
+    process.env.LOG_LEVEL = "verbose";
+    log.level = process.env.LOG_LEVEL;
+  });
+
+  program.on("command:*", (commands) => {
+    const availableCommands = program.commands.map((command) => command.name());
+    log.error(colors.red(`未知的命令: ${commands[0]}`));
+    if (availableCommands.length > 0) {
+      log.info("可用命令", availableCommands.join(","));
+    }
+  });
+
+  program.parse(process.argv);
+
+  if (process.argv.length < 3) {
+    program.outputHelp();
+    console.log();
   }
 }
 

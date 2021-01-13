@@ -22,7 +22,9 @@
   "dependencies": {
     "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
     "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-init": "file:../../commands/cli-init",
     "colors": "^1.4.0",
+    "commander": "^6.2.1",
     "dedent": "^0.7.0",
     "dotenv": "^8.2.0",
     "import-local": "^3.0.2",
