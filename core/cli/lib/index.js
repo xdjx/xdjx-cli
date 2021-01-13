@@ -45,8 +45,8 @@ function registerCommands() {
     .option("-d --debug", "是否开启debug模式", false);
 
   program
-    .description("初始化项目")
     .command("init [projectName]")
+    .description("初始化项目")
     .option("-f --force", "是否覆盖原有目录文件，强制初始化项目")
     .action(init);
 
