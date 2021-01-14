@@ -16,7 +16,6 @@ const log = require("@xdjx/cli-log");
 const { getLastestVersion, getPkgVersions } = require("@xdjx/cli-get-npm-info");
 const pkg = require("../package.json");
 const constant = require("../lib/const");
-const minimist = require("minimist");
 
 module.exports = cli;
 
@@ -24,17 +23,20 @@ const program = new commander.Command();
 
 async function cli(argv) {
   try {
-    checkPkgVersion();
-    checkNodeVersion();
-    checkRoot();
-    checkUserHome();
-    checkEnv();
-    await checkGolbalUpdate();
-
+    await prepare();
     registerCommands();
   } catch (e) {
     log.error(e.message);
   }
+}
+
+async function prepare() {
+  checkPkgVersion();
+  checkNodeVersion();
+  checkRoot();
+  checkUserHome();
+  checkEnv();
+  await checkGolbalUpdate();
 }
 
 function registerCommands() {
@@ -42,7 +44,8 @@ function registerCommands() {
     .name(Object.keys(pkg.bin)[0])
     .usage("<command> [options]")
     .version(pkg.version)
-    .option("-d --debug", "是否开启debug模式", false);
+    .option("-d, --debug", "是否开启debug模式", false)
+    .option("-tp, --targetPath <targetPath>", "是否指定本地调试文件路径", "");
 
   program
     .command("init [projectName]")
@@ -53,6 +56,10 @@ function registerCommands() {
   program.on("option:debug", () => {
     process.env.LOG_LEVEL = "verbose";
     log.level = process.env.LOG_LEVEL;
+  });
+
+  program.on("option:targetPath", () => {
+    process.env.CLI_TARGET_PATH = program.targetPath;
   });
 
   program.on("command:*", (commands) => {
@@ -109,25 +116,6 @@ function checkUserHome() {
     return;
   }
   throw new Error(colors.red("当前系统用户登陆异常，无法找到当前用户主目录！"));
-}
-
-/**
- * 检查入参
- *
- * 这边的目的主要是检查是否开启了debug模式
- */
-function checkInputArgs() {
-  const args = minimist(process.argv.slice(2));
-  checkArgs(args);
-}
-function checkArgs(args) {
-  if (args.debug) {
-    process.env.LOG_LEVEL = "verbose";
-  } else {
-    process.env.LOG_LEVEL = "info";
-  }
-
-  log.level = process.env.LOG_LEVEL;
 }
 
 /**
