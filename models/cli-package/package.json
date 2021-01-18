@@ -14,9 +14,11 @@
     "lib"
   ],
   "dependencies": {
-    "@xdjx/cli-tools": "file:../../utils/cli-tools",
-    "@xdjx/cli-log": "file:../../utils/cli-log",
     "@xdjx/cli-format-path": "file:../../utils/cli-format-path",
+    "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-tools": "file:../../utils/cli-tools",
+    "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
+    "npminstall": "^4.10.0",
     "pkg-dir": "^5.0.0"
   },
   "publishConfig": {

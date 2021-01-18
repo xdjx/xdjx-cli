@@ -3,10 +3,12 @@
 const path = require("path");
 
 const pkgDir = require("pkg-dir").sync;
+const npmInstall = require("npminstall");
 
 const { isObject } = require("@xdjx/cli-tools");
 const formatPath = require("@xdjx/cli-format-path");
 const log = require("@xdjx/cli-log");
+const { getRegistry } = require("@xdjx/cli-get-npm-info");
 
 class Package {
   constructor(options) {
@@ -17,9 +19,11 @@ class Package {
       throw new Error("Package类options参数必须为对象！");
     }
 
-    const { targetPath, pkgName, pkgVersion } = options;
+    const { targetPath, storePath, pkgName, pkgVersion } = options;
     // pkg路径
     this.targetPath = targetPath;
+    // pkg的node_modules缓存路径
+    this.storePath = storePath;
     // pkg名
     this.pkgName = pkgName;
     // pkg版本
@@ -34,12 +38,21 @@ class Package {
   /**
    * 安装Package
    */
-  install() {}
+  install() {
+    return npmInstall({
+      root: this.targetPath,
+      storeDir: this.storePath,
+      registry: getRegistry(),
+      pkgs: [{ name: this.pkgName, version: this.pkgVersion }],
+    });
+  }
 
   /**
    * 更新Package
    */
-  update() {}
+  update() {
+    log.verbose("更新...");
+  }
 
   /**
    * 获取入口文件的路径

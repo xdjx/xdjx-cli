@@ -27,7 +27,10 @@ async function cli(argv) {
     await prepare();
     registerCommands();
   } catch (e) {
-    log.error(e.message);
+    log.error(colors.red(e.message));
+    if (program.debug) {
+      console.log(e);
+    }
   }
 }
 

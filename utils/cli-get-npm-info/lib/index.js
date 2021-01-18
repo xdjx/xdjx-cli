@@ -68,4 +68,5 @@ module.exports = {
   getPkgVersions,
   getGTVersions,
   getLastestVersion,
+  getRegistry,
 };
