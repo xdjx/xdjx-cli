@@ -23,6 +23,7 @@
     "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
     "@xdjx/cli-log": "file:../../utils/cli-log",
     "@xdjx/cli-init": "file:../../commands/cli-init",
+    "@xdjx/cli-exec": "file:../cli-exec",
     "colors": "^1.4.0",
     "commander": "^6.2.1",
     "dedent": "^0.7.0",

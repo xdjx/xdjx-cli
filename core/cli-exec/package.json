@@ -1,0 +1,33 @@
+{
+  "name": "@xdjx/cli-exec",
+  "version": "0.0.6",
+  "description": "> TODO: description",
+  "author": "EditYJ <158392613@qq.com>",
+  "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/core/cli-exec#readme",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@xdjx/cli-package": "file:../../models/cli-package",
+    "@xdjx/cli-log": "file:../../utils/cli-log"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdjx/xdjx-cli.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/xdjx/xdjx-cli/issues"
+  }
+}

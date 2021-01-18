@@ -10,9 +10,10 @@ const pathExists = require("path-exists").sync;
 const dotenv = require("dotenv");
 const dedent = require("dedent");
 const commander = require("commander");
-const init = require("@xdjx/cli-init");
 
+const init = require("@xdjx/cli-init");
 const log = require("@xdjx/cli-log");
+const exec = require("@xdjx/cli-exec");
 const { getLastestVersion, getPkgVersions } = require("@xdjx/cli-get-npm-info");
 const pkg = require("../package.json");
 const constant = require("../lib/const");
@@ -51,7 +52,7 @@ function registerCommands() {
     .command("init [projectName]")
     .description("初始化项目")
     .option("-f --force", "是否覆盖原有目录文件，强制初始化项目")
-    .action(init);
+    .action(exec);
 
   program.on("option:debug", () => {
     process.env.LOG_LEVEL = "verbose";
