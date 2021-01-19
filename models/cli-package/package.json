@@ -18,6 +18,7 @@
     "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
     "@xdjx/cli-log": "file:../../utils/cli-log",
     "@xdjx/cli-tools": "file:../../utils/cli-tools",
+    "fs-extra": "^9.0.1",
     "npminstall": "^4.10.0",
     "path-exists": "^4.0.0",
     "pkg-dir": "^5.0.0"
