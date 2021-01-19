@@ -3,12 +3,13 @@
 const path = require("path");
 
 const pkgDir = require("pkg-dir").sync;
+const pathExists = require("path-exists").sync;
 const npmInstall = require("npminstall");
 
 const { isObject } = require("@xdjx/cli-tools");
 const formatPath = require("@xdjx/cli-format-path");
 const log = require("@xdjx/cli-log");
-const { getRegistry } = require("@xdjx/cli-get-npm-info");
+const { getRegistry, getNewVersion } = require("@xdjx/cli-get-npm-info");
 
 class Package {
   constructor(options) {
@@ -28,17 +29,43 @@ class Package {
     this.pkgName = pkgName;
     // pkg版本
     this.pkgVersion = pkgVersion;
+    // 缓存包文件夹前缀
+    this.cacheFilePrefix = `_${this.pkgName.replace("/", "_")}@`;
+    // 缓存包文件夹后缀
+    this.cacheFileSuffix = `@${this.pkgName.split("/")[0]}`;
+  }
+
+  get cacheFileName() {
+    return `${this.cacheFilePrefix}${this.pkgVersion}${this.cacheFileSuffix}`;
+  }
+
+  async prepareVersion() {
+    if (this.pkgVersion === "latest") {
+      this.pkgVersion = await getNewVersion(this.pkgName);
+    }
+    log.verbose(`${this.pkgName} 当前需求版本: `, this.pkgVersion);
   }
 
   /**
    * 判断当前Package是否存在
    */
-  exists() {}
+  async exists() {
+    await this.prepareVersion();
+    if (this.storePath) {
+      const cachePath = path.resolve(this.storePath, this.cacheFileName);
+      log.verbose("检查缓存包路径: ", cachePath);
+      return pathExists(cachePath);
+    } else if (this.targetPath) {
+      return pathExists(this.targetPath);
+    }
+    return false;
+  }
 
   /**
    * 安装Package
    */
-  install() {
+  async install() {
+    await this.prepareVersion();
     return npmInstall({
       root: this.targetPath,
       storeDir: this.storePath,

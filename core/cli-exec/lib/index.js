@@ -47,7 +47,7 @@ async function cliExec(...args) {
     });
 
     // 判断是否存在，如果存在则执行更新逻辑，不存在则执行安装逻辑
-    if (pkg.exists()) {
+    if (await pkg.exists()) {
       log.verbose("cliExec", "当前执行的命令依赖包已存在，执行更新流程...");
       pkg.update();
     } else {

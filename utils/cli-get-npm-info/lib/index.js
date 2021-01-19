@@ -63,10 +63,16 @@ async function getLastestVersion(pkgName, baseVersion, native) {
   return versions[0];
 }
 
+async function getNewVersion(pkgName) {
+  const versions = await getPkgVersions(pkgName);
+  return versions[0];
+}
+
 module.exports = {
   getNpmInfo,
   getPkgVersions,
   getGTVersions,
   getLastestVersion,
+  getNewVersion,
   getRegistry,
 };
