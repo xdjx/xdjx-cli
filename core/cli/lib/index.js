@@ -83,7 +83,7 @@ function registerCommands() {
 }
 
 /**
- * 检查cli版本
+ * 检查 cli 版本
  */
 function checkPkgVersion() {
   log.notice("cli-当前版本", `${pkg.version}`);
