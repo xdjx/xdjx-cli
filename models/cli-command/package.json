@@ -1,9 +1,9 @@
 {
-  "name": "@xdjx/cli-exec",
+  "name": "@xdjx/cli-command",
   "version": "0.0.8",
   "description": "> TODO: description",
   "author": "EditYJ <158392613@qq.com>",
-  "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/core/cli-exec#readme",
+  "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/models/cli-command#readme",
   "license": "MIT",
   "main": "lib/index.js",
   "directories": {
@@ -15,8 +15,9 @@
   ],
   "dependencies": {
     "@xdjx/cli-log": "file:../../utils/cli-log",
-    "@xdjx/cli-package": "file:../../models/cli-package",
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "dedent": "^0.7.0",
+    "semver": "^7.3.4"
   },
   "publishConfig": {
     "access": "public"

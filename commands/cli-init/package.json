@@ -14,7 +14,8 @@
     "lib"
   ],
   "dependencies": {
-    "@xdjx/cli-log": "file:../../utils/cli-log"
+    "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-command": "file:../../models/cli-command"
   },
   "publishConfig": {
     "access": "public"

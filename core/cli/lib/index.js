@@ -11,7 +11,6 @@ const dotenv = require("dotenv");
 const dedent = require("dedent");
 const commander = require("commander");
 
-const init = require("@xdjx/cli-init");
 const log = require("@xdjx/cli-log");
 const exec = require("@xdjx/cli-exec");
 const { getLastestVersion, getPkgVersions } = require("@xdjx/cli-get-npm-info");
@@ -28,15 +27,12 @@ async function cli(argv) {
     registerCommands();
   } catch (e) {
     log.error(colors.red(e.message));
-    if (program.debug) {
-      console.log(e);
-    }
+    log.verbose("错误执行栈", e);
   }
 }
 
 async function prepare() {
   checkPkgVersion();
-  checkNodeVersion();
   checkRoot();
   checkUserHome();
   checkEnv();
@@ -87,21 +83,6 @@ function registerCommands() {
  */
 function checkPkgVersion() {
   log.notice("cli-当前版本", `${pkg.version}`);
-}
-
-/**
- * 检查node版本
- */
-function checkNodeVersion() {
-  const localVersion = process.version;
-  const lowestVersion = constant.LOWEST_NODE_VERSION;
-  if (semver.gt(lowestVersion, localVersion)) {
-    throw new Error(
-      colors.red(
-        `本地node版本过低，请升级node版本后使用，最低支持版本为 v${lowestVersion}`
-      )
-    );
-  }
 }
 
 /**

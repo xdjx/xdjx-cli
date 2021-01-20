@@ -2,6 +2,8 @@
 
 const path = require("path");
 
+const colors = require("colors/safe");
+
 const Package = require("@xdjx/cli-package");
 const log = require("@xdjx/cli-log");
 
@@ -12,12 +14,11 @@ const DEPEND_PATH = "dependencies";
 
 async function cliExec(...args) {
   const cmdObj = args[args.length - 1];
-
+ 
   let targetPath = process.env.CLI_TARGET_PATH;
   const homePath = process.env.CLI_HOME_PATH;
   let storePath = "";
   let pkg = "";
-  let indexPath = "";
   const pkgName = SETTINS[cmdObj.name()];
   const pkgVersion = "latest";
 
@@ -28,7 +29,6 @@ async function cliExec(...args) {
       pkgName,
       pkgVersion,
     });
-    indexPath = pkg.getRootFilePath();
   } else {
     // 如果没有指定目标路径，那么读取缓存路径，更新或安装对应模块使用
     targetPath = path.resolve(homePath, DEPEND_PATH);
@@ -49,16 +49,23 @@ async function cliExec(...args) {
       log.verbose("cliExec", `包缓存缓存路径：${storePath}`);
       await pkg.install();
     }
-
-    // 获取入口文件路径
-    indexPath = pkg.getRootFilePath();
   }
+
+  // 获取入口文件路径
+  const indexPath = pkg.getRootFilePath();
   log.verbose("入口文件路径：", indexPath);
   // 如果存在入口文件则直接传入参数并执行
   if (indexPath) {
-    require(indexPath)(...args);
+    try {
+      require(indexPath)(...args);
+    } catch (e) {
+      log.error(colors.red(e.message));
+      if (process.env.LOG_LEVEL === "verbose") {
+        console.log(e);
+      }
+    }
   } else {
-    throw new Error("指定的路径貌似不对，该路径下没有需要的入口文件。");
+    throw new Error("入口文件路径貌似不对，该路径下没有需要的入口文件。");
   }
 }
 
