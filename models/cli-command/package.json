@@ -15,6 +15,7 @@
   ],
   "dependencies": {
     "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-tools": "file:../../utils/cli-tools",
     "colors": "^1.4.0",
     "dedent": "^0.7.0",
     "semver": "^7.3.4"

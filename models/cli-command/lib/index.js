@@ -5,17 +5,21 @@ const colors = require("colors/safe");
 const dedent = require("dedent");
 
 const log = require("@xdjx/cli-log");
+const { isObject } = require("@xdjx/cli-tools");
 
 const LOWEST_NODE_VERSION = "12.0.0";
 
 class Command {
-  constructor(...args) {
+  constructor(cmd) {
     // 检查参数
-    if (!args || args.length < 1) {
-      throw new Error("Command构造函数参数不能为空");
+    if (!cmd) {
+      throw new Error("Command 构造函数参数不能为空！");
+    }
+    if (!isObject(cmd)) {
+      throw new Error("Command 构造函数参数必须为对象！");
     }
 
-    this._args = args;
+    this._cmd = cmd;
 
     // 执行初始化逻辑
     let runner = new Promise(() => {
@@ -59,8 +63,7 @@ class Command {
    * 初始化传入参数
    */
   initArgs() {
-    this._cmd = this._args[this._args.length - 1];
-    this._argv = this._args.slice(0, this._args.length - 1);
+    this._argv = this._cmd.args;
   }
 }
 

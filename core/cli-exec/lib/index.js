@@ -1,6 +1,7 @@
 "use strict";
 
 const path = require("path");
+const cp = require("child_process");
 
 const colors = require("colors/safe");
 
@@ -13,8 +14,11 @@ const SETTINS = {
 const DEPEND_PATH = "dependencies";
 
 async function cliExec(...args) {
+  if (args.length < 1) {
+    throw new Error("参数不能为空！");
+  }
   const cmdObj = args[args.length - 1];
- 
+
   let targetPath = process.env.CLI_TARGET_PATH;
   const homePath = process.env.CLI_HOME_PATH;
   let storePath = "";
@@ -57,7 +61,33 @@ async function cliExec(...args) {
   // 如果存在入口文件则直接传入参数并执行
   if (indexPath) {
     try {
-      require(indexPath)(...args);
+      // 过滤有效参数
+      const cmd = Object.create(null);
+      Object.keys(cmdObj).forEach((key) => {
+        if (
+          !key.startsWith("_") &&
+          key !== "parent" &&
+          cmdObj.hasOwnProperty(key)
+        ) {
+          cmd[key] = cmdObj[key];
+        }
+      });
+
+      // 拼装执行代码
+      const code = `require('${indexPath}')(${JSON.stringify(cmd)})`;
+      // 开启新进程执行代码
+      const child = spawn("node", ["-e", code], {
+        cwd: process.cwd(),
+        stdio: "inherit",
+      });
+      child.on("error", (err) => {
+        log.error(colors.red(err.message));
+        process.exit(1);
+      });
+      child.on("exit", (code) => {
+        log.verbose("命令执行成功：", code);
+        process.exit(0);
+      });
     } catch (e) {
       log.error(colors.red(e.message));
       if (process.env.LOG_LEVEL === "verbose") {
@@ -67,6 +97,14 @@ async function cliExec(...args) {
   } else {
     throw new Error("入口文件路径貌似不对，该路径下没有需要的入口文件。");
   }
+}
+
+function spawn(command, args, options) {
+  const win32 = process.platform === "win32";
+  const cmd = win32 ? "cmd" : command;
+  const cmdArgs = win32 ? ["/c"].concat(command, args) : args;
+
+  return cp.spawn(cmd, cmdArgs, options || {});
 }
 
 module.exports = cliExec;

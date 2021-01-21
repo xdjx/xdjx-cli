@@ -12,7 +12,7 @@ class InitCommand extends Command {
   }
 
   exec() {
-    log.verbose("开始执行init命令逻辑...")    
+    log.verbose("开始执行init命令逻辑...");
   }
 }
 
