@@ -76,7 +76,7 @@ async function cliExec(...args) {
       // 拼装执行代码
       const code = `require('${indexPath}')(${JSON.stringify(cmd)})`;
       // 开启新进程执行代码
-      const child = spawn("node", ["-e", code], {
+      const child = cp.spawn("node", ["-e", code], {
         cwd: process.cwd(),
         stdio: "inherit",
       });
@@ -99,12 +99,12 @@ async function cliExec(...args) {
   }
 }
 
-function spawn(command, args, options) {
-  const win32 = process.platform === "win32";
-  const cmd = win32 ? "cmd" : command;
-  const cmdArgs = win32 ? ["/c"].concat(command, args) : args;
+// function spawn(command, args, options) {
+//   const win32 = process.platform === "win32";
+//   const cmd = win32 ? "cmd" : command;
+//   const cmdArgs = win32 ? ["/c"].concat(command, args) : args;
 
-  return cp.spawn(cmd, cmdArgs, options || {});
-}
+//   return cp.spawn(cmd, cmdArgs, options || {});
+// }
 
 module.exports = cliExec;
