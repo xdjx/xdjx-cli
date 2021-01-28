@@ -17,7 +17,8 @@
     "@xdjx/cli-command": "file:../../models/cli-command",
     "@xdjx/cli-log": "file:../../utils/cli-log",
     "fs-extra": "^9.1.0",
-    "inquirer": "^7.3.3"
+    "inquirer": "^7.3.3",
+    "semver": "^7.3.4"
   },
   "publishConfig": {
     "access": "public"

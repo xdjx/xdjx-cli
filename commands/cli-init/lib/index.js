@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const inquirer = require("inquirer");
 const fse = require("fs-extra");
+const semver = require("semver");
 
 const log = require("@xdjx/cli-log");
 const Command = require("@xdjx/cli-command");
@@ -86,15 +87,23 @@ class InitCommand extends Command {
             name: "组件项目",
             value: TYPE_COMPONENT,
           },
-        ]
+        ],
       },
       {
         type: "input",
         name: "name",
         message: "请输入项目名",
         default: this.projectName,
-        validate: (value) => {
-          return typeof value === "string";
+        validate: function (value) {
+          const reg = /^[a-zA-Z]+([_][a-zA-Z][a-zA-Z0-9]*|[-][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/;
+          const done = this.async();
+          setTimeout(() => {
+            if (!reg.test(value)) {
+              done("请输入合法的项目名称！");
+              return;
+            }
+            done(null, true);
+          }, 0);
         },
       },
       {
@@ -102,8 +111,22 @@ class InitCommand extends Command {
         name: "version",
         message: "请输入项目版本号",
         default: "0.0.1",
-        validate: (value) => {
-          return typeof value === "string";
+        validate: function (value) {
+          const done = this.async();
+          setTimeout(() => {
+            if (!!!semver.valid(value)) {
+              done("请输入合法的版本号！");
+              return;
+            }
+            done(null, true);
+          }, 0);
+        },
+        filter: (value) => {
+          const v = semver.valid(value);
+          if (v) {
+            return v;
+          }
+          return value;
         },
       },
     ]);
