@@ -15,10 +15,13 @@
   ],
   "dependencies": {
     "@xdjx/cli-command": "file:../../models/cli-command",
+    "@xdjx/cli-package": "file:../../models/cli-package",
     "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-request": "file:../../utils/cli-request",
     "fs-extra": "^9.1.0",
     "inquirer": "^7.3.3",
-    "semver": "^7.3.4"
+    "semver": "^7.3.4",
+    "user-home": "^2.0.0"
   },
   "publishConfig": {
     "access": "public"

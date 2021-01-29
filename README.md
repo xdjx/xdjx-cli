@@ -5,4 +5,5 @@ xdjx-cli
 ```
 CLI_TARGET_PATH -tp --targetPath
 CLI_HOME_PATH
+CLI_API_URL
 ```

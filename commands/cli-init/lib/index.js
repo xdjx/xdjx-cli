@@ -1,13 +1,18 @@
 'use strict';
 
 const fs = require('fs');
+const path = require('path');
 
 const inquirer = require('inquirer');
 const fse = require('fs-extra');
 const semver = require('semver');
+const userHome = require('user-home');
 
 const log = require('@xdjx/cli-log');
 const Command = require('@xdjx/cli-command');
+const Package = require('@xdjx/cli-package');
+
+const { requestTemplateList } = require('../api/template');
 
 const TYPE_PROJECT = 'project';
 const TYPE_COMPONENT = 'component';
@@ -21,19 +26,39 @@ class InitCommand extends Command {
   }
 
   async exec() {
-    // 1. 准备阶段
-    this.projectInfo = await this.prepare();
-    if (this.projectInfo) {
+    try {
+      // 1. 准备阶段
+      await this.prepare();
       log.verbose('projectInfo', this.projectInfo);
-      // 2. 查询模板列表
-      this.templateInfo = await this.getTemplateList();
-      // 3. 下载模板
-      // 4. 安装模板
+
+      if (this.templateList && this.projectInfo) {
+        // 3. 下载模板
+        await this.downloadTemplate();
+        // 4. 安装模板
+      }
+    } catch (error) {
+      log.error(error.message);
     }
   }
 
+  /**
+   * 准备阶段
+   *
+   * 1. 获取模板信息
+   * 2. 获取用户输入信息
+   */
   async prepare() {
-    // 1. 判断当前目录是否为空
+    // 1. 查询模板列表
+    this.templateList = await this.getTemplateList();
+    log.verbose(
+      'templateList',
+      this.templateList.map(o => o.value.pkgName)
+    );
+    if (!this.templateList || this.templateList.length <= 0) {
+      throw new Error('模板信息获取失败！');
+    }
+
+    // 2. 判断当前目录是否为空
     const curDir = process.cwd();
     if (!this.isDirEmpty(curDir)) {
       let isContinue = false;
@@ -69,9 +94,12 @@ class InitCommand extends Command {
         }
       }
     }
-    return await this.getProjectInfo();
+    this.projectInfo = await this.getProjectInfo();
   }
 
+  /**
+   * 获取项目初始化基本信息
+   */
   async getProjectInfo() {
     const projectInfo = {};
     const o = await inquirer.prompt([
@@ -131,12 +159,53 @@ class InitCommand extends Command {
           return value;
         },
       },
+      {
+        type: 'list',
+        name: 'templateInfo',
+        message: '请选择项目模板',
+        choices: this.templateList,
+      },
     ]);
 
     return { ...projectInfo, ...o };
   }
 
-  async getTemplateList() {}
+  /**
+   * 读取远程模板列表信息
+   */
+  async getTemplateList() {
+    const list = await requestTemplateList();
+    const formatList = list.map(o => {
+      return {
+        name: `${o.name}(v${o.version})`,
+        value: {
+          pkgName: o.pkg_name,
+          version: o.version,
+        },
+      };
+    });
+    return formatList;
+  }
+
+  /**
+   * 下载用户选择的模板
+   */
+  async downloadTemplate() {
+    const { pkgName, version } = this.projectInfo.templateInfo;
+    const targetPath = path.resolve(process.env.CLI_HOME_PATH, 'template');
+    const storePath = path.resolve(targetPath, 'node_modules');
+    const templatePkg = new Package({
+      targetPath,
+      storePath,
+      pkgName,
+      pkgVersion: version,
+    });
+    if (templatePkg.exists()) {
+      templatePkg.update();
+    } else {
+      templatePkg.install();
+    }
+  }
 
   /**
    * 判断给出的目录下排除缓存和白名单文件后，此目录是否为空
