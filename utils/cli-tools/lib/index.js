@@ -12,8 +12,7 @@ function sleep(time = 1000) {
 function startSpinner(msg = 'processing...', animation = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏') {
   const spinner = new Spinner(`%s ${msg}`);
   spinner.setSpinnerString(animation);
-  spinner.start();
-  return spanner;
+  return spinner.start();
 }
 
 module.exports = {

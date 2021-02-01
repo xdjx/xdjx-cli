@@ -6,11 +6,11 @@ const path = require('path');
 const inquirer = require('inquirer');
 const fse = require('fs-extra');
 const semver = require('semver');
-const userHome = require('user-home');
 
 const log = require('@xdjx/cli-log');
 const Command = require('@xdjx/cli-command');
 const Package = require('@xdjx/cli-package');
+const { startSpinner } = require('@xdjx/cli-tools');
 
 const { requestTemplateList } = require('../api/template');
 
@@ -200,10 +200,26 @@ class InitCommand extends Command {
       pkgName,
       pkgVersion: version,
     });
-    if (templatePkg.exists()) {
-      templatePkg.update();
+    if (await templatePkg.exists()) {
+      const spinner = startSpinner('模板已存在，正在更新，请稍后...');
+      try {
+        await templatePkg.update();
+        log.info('', '模板更新成功🎇');
+      } catch (error) {
+        throw error;
+      } finally {
+        spinner.stop(true);
+      }
     } else {
-      templatePkg.install();
+      const spinner = startSpinner('正在下载模板，请稍后...');
+      try {
+        await templatePkg.install();
+        log.info('', '模板下载成功🎇');
+      } catch (error) {
+        throw error;
+      } finally {
+        spinner.stop(true);
+      }
     }
   }
 
