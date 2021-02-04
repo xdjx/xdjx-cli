@@ -1,4 +1,5 @@
 'use strict';
+const cp = require('child_process');
 const Spinner = require('cli-spinner').Spinner;
 
 function isObject(o) {
@@ -15,8 +16,32 @@ function startSpinner(msg = 'processing...', animation = '⠋⠙⠹⠸⠼⠴⠦�
   return spinner.start();
 }
 
+function spawn(command, args, options) {
+  const win32 = process.platform === "win32";
+  const cmd = win32 ? "cmd" : command;
+  const cmdArgs = win32 ? ["/c"].concat(command, args) : args;
+
+  return cp.spawn(cmd, cmdArgs, options || {});
+}
+
+function spawnAsync(
+  command,
+  args,
+  options = {
+    cwd: process.cwd(),
+    stdio: 'inherit',
+  }
+) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, options);
+    child.on('exit', code => resolve(code));
+    child.on('error', error => reject(error));
+  });
+}
+
 module.exports = {
   isObject,
   sleep,
   startSpinner,
+  spawnAsync,
 };
