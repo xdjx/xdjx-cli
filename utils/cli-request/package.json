@@ -1,6 +1,6 @@
 {
   "name": "@xdjx/cli-request",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "请求库",
   "author": "EditYJ <158392613@qq.com>",
   "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/utils/cli-request#readme",

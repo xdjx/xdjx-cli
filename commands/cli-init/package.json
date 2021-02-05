@@ -1,6 +1,6 @@
 {
   "name": "@xdjx/cli-init",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "> TODO: description",
   "author": "EditYJ <158392613@qq.com>",
   "homepage": "https://github.com/xdjx/xdjx-cli/tree/master/commands/cli-init#readme",
@@ -15,8 +15,8 @@
   ],
   "dependencies": {
     "@xdjx/cli-command": "file:../../models/cli-command",
-    "@xdjx/cli-package": "file:../../models/cli-package",
     "@xdjx/cli-log": "file:../../utils/cli-log",
+    "@xdjx/cli-package": "file:../../models/cli-package",
     "@xdjx/cli-request": "file:../../utils/cli-request",
     "@xdjx/cli-tools": "file:../../utils/cli-tools",
     "fs-extra": "^9.1.0",
