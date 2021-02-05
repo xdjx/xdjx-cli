@@ -9,7 +9,7 @@ const Package = require("@xdjx/cli-package");
 const log = require("@xdjx/cli-log");
 
 const SETTINS = {
-  init: "@xdjx/cli-utils",
+  init: "@xdjx/cli-init",
 };
 const DEPEND_PATH = "dependencies";
 
