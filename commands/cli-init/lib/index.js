@@ -20,6 +20,8 @@ const TYPE_COMPONENT = 'component';
 const TEMPLATE_TYPE_NORMAL = 'normal';
 const TEMPLATE_TYPE_CUSTOM = 'custom';
 
+const WHITE_CMD = ['npm', 'cnpm', 'yarn'];
+
 class InitCommand extends Command {
   init() {
     this.projectName = this._argv[0];
@@ -92,7 +94,7 @@ class InitCommand extends Command {
         if (canEmptyDir) {
           const spinner = startSpinner('正在清空当前目录...');
           // 清空当前目录，继续安装流程
-          fse.emptyDirSync(curDir);
+          await fse.emptyDir(curDir);
           spinner.stop(true);
         } else if (!this.force) {
           // 如果没有强制安装则结束流程
@@ -299,28 +301,35 @@ class InitCommand extends Command {
   }
 
   async installDependencyAndRun() {
-    // 安装依赖
     const { installCommand, runCommand } = this.projectInfo.templateInfo;
-    let installRes;
+    // 安装依赖
+    await this.execCommand(installCommand, '安装依赖...', '依赖安装失败！');
+    // 启动项目
+    await this.execCommand(runCommand, '启动项目...');
+  }
 
-    if (installCommand) {
-      log.info('', '🚀正在安装项目依赖...');
-      const installCmdList = installCommand.split(' ');
-      const installCmd = installCmdList[0];
-      const installArgs = installCmdList.slice(1);
-      installRes = await spawnAsync(installCmd, installArgs);
+  // 允许命令
+  async execCommand(cmdStr, msg, errMsg) {
+    let runRes;
+    if (cmdStr) {
+      msg && log.info('', msg);
+      const cmdList = cmdStr.split(' ');
+      const cmd = this.checkCmd(cmdList[0]);
+      if (!cmd) {
+        throw new Error(`无效的命令，命令: ${cmdStr}`);
+      }
+      const args = cmdList.slice(1);
+      runRes = await spawnAsync(cmd, args);
     }
-    if (installRes !== 0) {
-      throw new Error('项目依赖安装失败！');
-    }
+    if (runRes !== 0) throw new Error(errMsg);
+    return runRes;
+  }
 
-    if (runCommand) {
-      log.info('', '🎇依赖安装完成，启动项目...');
-      const runCmdList = runCommand.split(' ');
-      const runCmd = runCmdList[0];
-      const runArgs = runCmdList.slice(1);
-      await spawnAsync(runCmd, runArgs);
+  checkCmd(cmd) {
+    if (WHITE_CMD.includes(cmd)) {
+      return cmd;
     }
+    return null;
   }
 
   /**
