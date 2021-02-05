@@ -6,6 +6,9 @@ const path = require('path');
 const inquirer = require('inquirer');
 const fse = require('fs-extra');
 const semver = require('semver');
+const kebabCase = require('kebab-case');
+const glob = require('glob');
+const { renderFile } = require('ejs');
 
 const log = require('@xdjx/cli-log');
 const Command = require('@xdjx/cli-command');
@@ -174,7 +177,7 @@ class InitCommand extends Command {
         choices: this.templateList,
       },
     ]);
-
+    projectInfo.lowerCaseName = kebabCase(o.name).replace(/^-/, '');
     return { ...projectInfo, ...o };
   }
 
@@ -282,6 +285,10 @@ class InitCommand extends Command {
 
       // 复制模板
       fse.copySync(templatePath, targetPath);
+
+      // 渲染模板
+      const ignore = ['node_modules/**', 'public/**'];
+      await this.renderTemplate({ ignore });
     } catch (error) {
       err = error;
       throw error;
@@ -300,6 +307,41 @@ class InitCommand extends Command {
     console.log('自定义模板安装');
   }
 
+  async renderTemplate(options) {
+    // console.log(this.projectInfo);
+    const cwd = process.cwd();
+    const ignore = ['**/*.png', ...options.ignore];
+    return new Promise((resolve, reject) => {
+      glob(
+        '**',
+        {
+          cwd,
+          ignore,
+          nodir: true,
+        },
+        async (err, matches) => {
+          if (err) {
+            reject(err);
+          }
+          await Promise.all(
+            matches.map(matchePath => {
+              return new Promise((rs, rj) => {
+                renderFile(matchePath, this.projectInfo, {}, (err, str) => {
+                  if (err) {
+                    rj(err);
+                  }
+                  fse.writeFileSync(matchePath, str);
+                  rs();
+                });
+              });
+            })
+          );
+          resolve();
+        }
+      );
+    });
+  }
+
   async installDependencyAndRun() {
     const { installCommand, runCommand } = this.projectInfo.templateInfo;
     // 安装依赖
@@ -308,7 +350,7 @@ class InitCommand extends Command {
     await this.execCommand(runCommand, '启动项目...');
   }
 
-  // 允许命令
+  // 运行命令
   async execCommand(cmdStr, msg, errMsg) {
     let runRes;
     if (cmdStr) {

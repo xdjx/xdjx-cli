@@ -19,8 +19,11 @@
     "@xdjx/cli-package": "file:../../models/cli-package",
     "@xdjx/cli-request": "file:../../utils/cli-request",
     "@xdjx/cli-tools": "file:../../utils/cli-tools",
+    "ejs": "^3.1.5",
     "fs-extra": "^9.1.0",
+    "glob": "^7.1.6",
     "inquirer": "^7.3.3",
+    "kebab-case": "^1.0.0",
     "semver": "^7.3.4",
     "user-home": "^2.0.0"
   },
