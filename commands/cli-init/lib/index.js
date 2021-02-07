@@ -311,34 +311,32 @@ class InitCommand extends Command {
     // console.log(this.projectInfo);
     const cwd = process.cwd();
     const ignore = ['**/*.png', ...options.ignore];
+    const golbOption = {
+      cwd,
+      ignore,
+      nodir: true,
+    };
     return new Promise((resolve, reject) => {
-      glob(
-        '**',
-        {
-          cwd,
-          ignore,
-          nodir: true,
-        },
-        async (err, matches) => {
-          if (err) {
-            reject(err);
-          }
-          await Promise.all(
-            matches.map(matchePath => {
-              return new Promise((rs, rj) => {
-                renderFile(matchePath, this.projectInfo, {}, (err, str) => {
-                  if (err) {
-                    rj(err);
-                  }
-                  fse.writeFileSync(matchePath, str);
-                  rs();
-                });
+      // 过滤文件
+      glob('**', golbOption, async (err, matches) => {
+        err && reject(err);
+        await Promise.all(
+          matches.map(matchePath => {
+            return new Promise((rs, rj) => {
+              // 渲染文件内容
+              renderFile(matchePath, this.projectInfo, {}, (err, str) => {
+                if (err) {
+                  rj(err);
+                }
+                // 将新内容写入当前文件
+                fse.writeFileSync(matchePath, str);
+                rs();
               });
-            })
-          );
-          resolve();
-        }
-      );
+            });
+          })
+        );
+        resolve();
+      });
     });
   }
 
