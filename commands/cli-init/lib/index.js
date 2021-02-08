@@ -29,6 +29,7 @@ class InitCommand extends Command {
   init() {
     this.projectName = this._argv[0];
     this.force = !!this._cmd.force;
+    this.typeName = '项目';
     log.verbose('init[projectName]:\t', this.projectName);
     log.verbose('init[force]:\t', this.force);
   }
@@ -59,10 +60,7 @@ class InitCommand extends Command {
   async prepare() {
     // 1. 查询模板列表
     this.templateList = await this.getTemplateList();
-    log.verbose(
-      'templateList',
-      this.templateList.map(o => o.value.pkgName)
-    );
+    log.verbose('templateList', this.templateList);
     if (!this.templateList || this.templateList.length <= 0) {
       throw new Error('模板信息获取失败！');
     }
@@ -113,7 +111,9 @@ class InitCommand extends Command {
    */
   async getProjectInfo() {
     const projectInfo = {};
-    const o = await inquirer.prompt([
+
+    // 通过tag和项目类型匹配过滤无用模板
+    const { type: proType } = await inquirer.prompt([
       {
         type: 'list',
         name: 'type',
@@ -125,22 +125,32 @@ class InitCommand extends Command {
             value: TYPE_PROJECT,
           },
           {
-            name: '组件项目',
+            name: '组件库项目',
             value: TYPE_COMPONENT,
           },
         ],
       },
+    ]);
+    if (proType === TYPE_COMPONENT) {
+      this.typeName = '组件库';
+    }
+    this.templateList = this.templateList.filter(({ value }) =>
+      value.tag.includes(proType)
+    );
+
+    // 收集项目基本信息
+    const o = await inquirer.prompt([
       {
         type: 'input',
         name: 'name',
-        message: '请输入项目名',
+        message: `请输入${this.typeName}名`,
         default: this.projectName,
         validate: function (value) {
           const reg = /^[a-zA-Z]+([_][a-zA-Z][a-zA-Z0-9]*|[-][a-zA-Z][a-zA-Z0-9]*|[a-zA-Z0-9])*$/;
           const done = this.async();
           setTimeout(() => {
             if (!reg.test(value)) {
-              done('请输入合法的项目名称！');
+              done(`请输入合法的${this.typeName}名称！`);
               return;
             }
             done(null, true);
@@ -150,7 +160,7 @@ class InitCommand extends Command {
       {
         type: 'input',
         name: 'version',
-        message: '请输入项目版本号',
+        message: `请输入${this.typeName}版本号`,
         default: '0.0.1',
         validate: function (value) {
           const done = this.async();
@@ -171,9 +181,24 @@ class InitCommand extends Command {
         },
       },
       {
+        type: 'input',
+        name: 'description',
+        message: `请输入${this.typeName}描述`,
+        validate: function (value) {
+          const done = this.async();
+          setTimeout(() => {
+            if (!value) {
+              done(`${this.typeName}描述不能为空！`);
+              return;
+            }
+            done(null, true);
+          }, 0);
+        },
+      },
+      {
         type: 'list',
         name: 'templateInfo',
-        message: '请选择项目模板',
+        message: `请选择${this.typeName}模板`,
         choices: this.templateList,
       },
     ]);
@@ -193,6 +218,8 @@ class InitCommand extends Command {
         type = TEMPLATE_TYPE_NORMAL,
         install_command: installCommand,
         run_command: runCommand,
+        tag,
+        white_list: whiteList,
       } = o;
       return {
         name: `${o.name}(v${o.version})`,
@@ -202,6 +229,8 @@ class InitCommand extends Command {
           type,
           installCommand,
           runCommand,
+          tag,
+          whiteList,
         },
       };
     });
@@ -286,8 +315,9 @@ class InitCommand extends Command {
       // 复制模板
       fse.copySync(templatePath, targetPath);
 
+      const { whiteList = [] } = this.projectInfo.templateInfo;
       // 渲染模板
-      const ignore = ['node_modules/**', 'public/**'];
+      const ignore = ['**/node_modules/**', ...whiteList];
       await this.renderTemplate({ ignore });
     } catch (error) {
       err = error;
@@ -308,7 +338,6 @@ class InitCommand extends Command {
   }
 
   async renderTemplate(options) {
-    // console.log(this.projectInfo);
     const cwd = process.cwd();
     const ignore = ['**/*.png', ...options.ignore];
     const golbOption = {
