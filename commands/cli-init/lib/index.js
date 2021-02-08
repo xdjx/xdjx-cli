@@ -334,7 +334,20 @@ class InitCommand extends Command {
   }
 
   async customInstall() {
-    console.log('自定义模板安装');
+    const templateIndexPath = this.templatePkg.getRootFilePath();
+    if (!fs.existsSync(templateIndexPath)) {
+      throw new Error('找不到自定义模板入口文件！');
+    }
+    const options = {
+      ...this.projectInfo,
+      sourcePath: path.resolve(this.templatePkg.cacheFilePath, 'template'),
+      targetPath: process.cwd(),
+    };
+    const code = `require('${templateIndexPath}')(${JSON.stringify(options)})`;
+    log.notice('', '执行自定义模板安装逻辑...');
+    await spawnAsync('node', ['-e', code]);
+    log.info('', '自定义模板安装完毕🎇');
+
   }
 
   async renderTemplate(options) {
