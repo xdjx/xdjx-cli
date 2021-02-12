@@ -8,11 +8,9 @@
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
+    "api": "api",
     "test": "__tests__"
   },
-  "files": [
-    "lib"
-  ],
   "dependencies": {
     "@xdjx/cli-command": "file:../../models/cli-command",
     "@xdjx/cli-log": "file:../../utils/cli-log",

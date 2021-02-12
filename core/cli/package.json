@@ -16,9 +16,6 @@
     "lib": "lib",
     "test": "__tests__"
   },
-  "files": [
-    "lib"
-  ],
   "dependencies": {
     "@xdjx/cli-exec": "file:../cli-exec",
     "@xdjx/cli-get-npm-info": "file:../../utils/cli-get-npm-info",
